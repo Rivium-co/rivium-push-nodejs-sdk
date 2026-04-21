@@ -1,0 +1,38 @@
+{
+  "name": "@rivium/push-node",
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rivium-co/rivium-push-nodejs-sdk.git"
+  },
+  "homepage": "https://rivium.co/cloud/rivium-push",
+  "bugs": {
+    "url": "https://github.com/Rivium-co/rivium-push-nodejs-sdk/issues"
+  },
+  "description": "RiviumPush Node.js SDK \u2014 server-side push notifications, inbox, in-app messages, and more",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "rivium-push",
+    "push-notifications",
+    "notifications",
+    "inbox",
+    "in-app-messages"
+  ],
+  "author": "Rivium <support@rivium.co>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16"
+  },
+  "devDependencies": {
+    "@types/node": "^25.2.0",
+    "typescript": "^5.9.3"
+  }
+}
