@@ -22,6 +22,9 @@ export interface BillingInfo {
 export interface SendResult {
   success: number;
   failed: number;
+  // Set to 'no_recipients' when the target had zero registered devices.
+  // Distinguishes "no one to send to" from a real delivery failure.
+  reason?: 'no_recipients';
   billing?: BillingInfo;
 }
 
@@ -332,6 +335,8 @@ export interface ABTest {
 export type WebhookEvent =
   | 'message.sent'
   | 'message.delivered'
+  | 'message.failed'
+  | 'message.no_recipients'
   | 'message.opened'
   | 'message.clicked'
   | 'device.registered'

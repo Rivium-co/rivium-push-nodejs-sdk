@@ -75,6 +75,25 @@ await riviumPush.push.broadcast({
 });
 ```
 
+### Handling the Response
+
+Every send returns `{ success, failed, reason? }`. When the target had **zero registered devices** the message is not attempted and `reason` is set to `'no_recipients'` — distinct from a real delivery failure:
+
+```typescript
+const result = await riviumPush.push.sendToUser({
+  userId: 'user-123',
+  title: 'Your order shipped',
+  body: 'Track it from the app',
+});
+
+if (result.reason === 'no_recipients') {
+  // User has no device registered with Rivium Push.
+  // Fall back to email / SMS, mark them as push-unreachable, etc.
+} else if (result.failed > 0) {
+  // Real delivery failure on at least one device.
+}
+```
+
 ### App Identifier
 
 If your project has multiple apps (e.g. a shopping app and a chat app), use `appIdentifier` to target a specific app. This is the bundle ID / package name of the app (e.g. `com.myapp.ios`).
@@ -250,7 +269,14 @@ await riviumPush.scheduled.cancel(scheduled.id);
 const webhook = await riviumPush.webhooks.create({
   name: 'Order Events',
   url: 'https://example.com/webhooks/rivium-push',
-  events: ['message.delivered', 'message.opened', 'message.clicked'],
+  events: [
+    'message.sent',
+    'message.delivered',
+    'message.failed',
+    'message.no_recipients',
+    'message.opened',
+    'message.clicked',
+  ],
   secret: 'my-secret-key',
 });
 
