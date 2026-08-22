@@ -136,10 +136,21 @@ export interface Template {
 
 // ─── Segments ────────────────────────────────────────────────────
 
+export type SegmentFilterOperator =
+  | 'equals'
+  | 'not_equals'
+  | 'contains'
+  | 'not_contains'
+  | 'greater_than'
+  | 'less_than'
+  | 'in'
+  | 'not_in'
+  | 'exists';
+
 export interface SegmentFilter {
-  field: string;
-  operator: 'equals' | 'contains' | 'starts_with' | 'in' | 'gt' | 'lt' | 'between';
-  value: string | number | string[];
+  field: string; // e.g., 'platform', 'metadata.plan', 'metadata.totalSpent'
+  operator: SegmentFilterOperator;
+  value: string | number | boolean | string[];
 }
 
 export interface CreateSegmentOptions {
@@ -160,6 +171,25 @@ export interface Segment {
   deviceCount?: number;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface SegmentPreviewOptions {
+  filters?: SegmentFilter[];
+  /** Number of sample devices to return (max 50, default 20). */
+  limit?: number;
+}
+
+export interface SegmentPreviewResult {
+  /** Total number of devices matching the filters. */
+  count: number;
+  /** Small sample of matching devices (up to `limit`). */
+  preview: Array<{
+    deviceId: string;
+    platform: string;
+    userId: string | null;
+    topics: string[] | null;
+    metadata: Record<string, any> | null;
+  }>;
 }
 
 // ─── Scheduled ───────────────────────────────────────────────────

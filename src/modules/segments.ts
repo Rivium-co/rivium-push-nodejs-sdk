@@ -1,5 +1,12 @@
 import { HttpClient } from '../client';
-import { Segment, CreateSegmentOptions, UpdateSegmentOptions, Device } from '../types';
+import {
+  Segment,
+  CreateSegmentOptions,
+  UpdateSegmentOptions,
+  Device,
+  SegmentPreviewOptions,
+  SegmentPreviewResult,
+} from '../types';
 
 export class Segments {
   constructor(private client: HttpClient) {}
@@ -58,5 +65,27 @@ export class Segments {
    */
   async recalculateAll(): Promise<{ success: boolean }> {
     return this.client.post<{ success: boolean }>('/segments/recalculate-all');
+  }
+
+  /**
+   * Preview a set of filters without saving. Returns the total match count
+   * plus a small sample of matching devices — useful for validating filters
+   * before creating a segment.
+   *
+   * @example
+   * ```ts
+   * const { count, preview } = await rivium.segments.preview({
+   *   filters: [
+   *     { field: 'platform', operator: 'equals', value: 'ios' },
+   *     { field: 'metadata.plan', operator: 'equals', value: 'premium' },
+   *   ],
+   * });
+   * console.log(`${count} devices match`);
+   * ```
+   */
+  async preview(options: SegmentPreviewOptions = {}): Promise<SegmentPreviewResult> {
+    const { limit, ...body } = options;
+    const path = limit ? `/segments/preview?limit=${limit}` : '/segments/preview';
+    return this.client.post<SegmentPreviewResult>(path, body);
   }
 }

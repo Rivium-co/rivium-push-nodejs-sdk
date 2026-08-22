@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.2
+
+- Added `segments.preview()` for dry-running filter sets before creating a segment. Returns the total match count and a sample of matching devices.
+- `SegmentFilter` operators updated to match the backend: added `not_equals`, `not_contains`, `greater_than`, `less_than`, `not_in`, `exists`; removed the unsupported `starts_with`, `gt`, `lt`, `between`. `value` now also accepts `boolean`.
+
 ## 0.1.1
 
 - `SendResult` gains an optional `reason?: 'no_recipients'` field. Set when the target had zero registered devices so the call can be distinguished from a real delivery failure without polling the message row.
