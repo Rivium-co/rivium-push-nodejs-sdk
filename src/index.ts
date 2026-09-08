@@ -9,6 +9,7 @@ import { InApp } from './modules/in-app';
 import { ABTesting } from './modules/ab-testing';
 import { Webhooks } from './modules/webhooks';
 import { Analytics } from './modules/analytics';
+import { Receipts } from './modules/receipts';
 import { RiviumPushConfig } from './types';
 
 export class RiviumPush {
@@ -43,6 +44,8 @@ export class RiviumPush {
 
   /** Analytics */
   public analytics: Analytics;
+  /** Per-device delivery receipts for messages you have sent. */
+  public receipts: Receipts;
 
   constructor(config: RiviumPushConfig) {
     this.client = new HttpClient(config);
@@ -56,6 +59,7 @@ export class RiviumPush {
     this.abTesting = new ABTesting(this.client);
     this.webhooks = new Webhooks(this.client);
     this.analytics = new Analytics(this.client);
+    this.receipts = new Receipts(this.client);
   }
 }
 

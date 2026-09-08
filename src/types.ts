@@ -26,6 +26,56 @@ export interface SendResult {
   // Distinguishes "no one to send to" from a real delivery failure.
   reason?: 'no_recipients';
   billing?: BillingInfo;
+  /**
+   * Id of the message this send created. Use it to fetch delivery receipts
+   * later — `success` only means the push service accepted the notification,
+   * not that any device received it.
+   */
+  messageId?: string;
+}
+
+// ─── Delivery receipts ───────────────────────────────────────────
+
+/** Which transport carried a notification to a device. */
+export type DeliveryTransport = 'apns' | 'voip' | 'webpush' | 'pn';
+
+export type ReceiptStatus =
+  | 'sent'
+  | 'delivered'
+  | 'opened'
+  | 'clicked'
+  | 'failed'
+  | 'dismissed';
+
+export interface DeliveryReceipt {
+  id: string;
+  messageId: string;
+  deviceId: string;
+  userId?: string;
+  platform?: string;
+  /** `sent` = accepted by the transport; `delivered` = confirmed by the device. */
+  status: ReceiptStatus;
+  transport?: DeliveryTransport;
+  /** The push service's own id — APNs `apns-id`. Quote it when escalating. */
+  providerMessageId?: string;
+  /** Failure reason, e.g. 'Unregistered', 'Gone', 'BadDeviceToken'. */
+  error?: string;
+  sentAt: string;
+  deliveredAt?: string;
+  openedAt?: string;
+  clickedAt?: string;
+}
+
+export interface MessageDeliveryStats {
+  total: number;
+  sent: number;
+  delivered: number;
+  opened: number;
+  clicked: number;
+  failed: number;
+  deliveryRate: number;
+  openRate: number;
+  clickRate: number;
 }
 
 // ─── Push ────────────────────────────────────────────────────────

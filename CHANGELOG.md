@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.3
+
+- Added `receipts` — per-device delivery receipts for messages you have sent. A send result counts what APNs, FCM or Web Push *accepted*, which is not the same as delivered; receipts carry the device, transport, failure reason, and whether the device confirmed receipt. Includes `getForMessage()`, `getMessageStats()` and action-button click counts.
+
 ## 0.1.2
 
 - Added `segments.preview()` for dry-running filter sets before creating a segment. Returns the total match count and a sample of matching devices.
