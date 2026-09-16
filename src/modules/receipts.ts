@@ -1,5 +1,13 @@
 import { HttpClient } from '../client';
-import { DeliveryReceipt, MessageDeliveryStats } from '../types';
+import {
+  DeliveryReceipt,
+  MessageDeliveryStats,
+  Paginated,
+  ReceiptAnalytics,
+  ReceiptAnalyticsOptions,
+  ReceiptListFilters,
+  ReceiptListItem,
+} from '../types';
 
 /**
  * Delivery receipts — what actually happened to a notification, per device.
@@ -72,5 +80,28 @@ export class Receipts {
       startDate: startDate instanceof Date ? startDate.toISOString() : startDate,
       endDate: endDate instanceof Date ? endDate.toISOString() : endDate,
     });
+  }
+
+  /**
+   * Page through the receipt log for your app, newest first. All filters are
+   * optional exact matches; `hasError: true` returns failures that carry a
+   * reason without you knowing the reason strings.
+   *
+   * @example
+   * ```ts
+   * const { items, total } = await rivium.receipts.list({ platform: 'ios', status: 'failed', limit: 100 });
+   * ```
+   */
+  async list(filters: ReceiptListFilters = {}): Promise<Paginated<ReceiptListItem>> {
+    return this.client.get<Paginated<ReceiptListItem>>('/receipts', { ...filters });
+  }
+
+  /**
+   * Delivery analytics for a date range (default: the last 30 days): totals,
+   * per-platform, per-transport and per-SDK-version breakdowns, a timeseries
+   * bucketed by day or hour, and the top failure reasons.
+   */
+  async analytics(options: ReceiptAnalyticsOptions = {}): Promise<ReceiptAnalytics> {
+    return this.client.get<ReceiptAnalytics>('/receipts/analytics', { ...options });
   }
 }

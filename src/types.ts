@@ -9,6 +9,14 @@ export interface RiviumPushConfig {
 
 // ─── Common ──────────────────────────────────────────────────────
 
+/** Page-numbered list response. */
+export interface Paginated<T> {
+  items: T[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
 export interface PaginationParams {
   limit?: number;
   offset?: number;
@@ -64,6 +72,93 @@ export interface DeliveryReceipt {
   deliveredAt?: string;
   openedAt?: string;
   clickedAt?: string;
+  /** SDK that registered the device (send-time snapshot, device fallback). */
+  sdkName?: string | null;
+  sdkVersion?: string | null;
+  appVersion?: string | null;
+}
+
+/** One row of `receipts.list()`. */
+export interface ReceiptListItem {
+  id: string;
+  messageId: string;
+  messageTitle: string;
+  deviceId: string;
+  userId: string | null;
+  status: ReceiptStatus;
+  platform: string | null;
+  transport: string | null;
+  providerMessageId: string | null;
+  error: string | null;
+  actionId: string | null;
+  sentAt: string;
+  deliveredAt: string | null;
+  openedAt: string | null;
+  clickedAt: string | null;
+  /** Send-time snapshot, falling back to the device's current values; null = unknown. */
+  sdkName: string | null;
+  sdkVersion: string | null;
+  appVersion: string | null;
+}
+
+export interface ReceiptListFilters {
+  /** 1-based page (default 1). */
+  page?: number;
+  /** Page size (default 50, max 200). */
+  limit?: number;
+  platform?: Platform;
+  status?: ReceiptStatus;
+  transport?: DeliveryTransport;
+  /** Exact failure reason, e.g. 'Unregistered'. */
+  error?: string;
+  /** true = only failed receipts with a reason; false = only without. */
+  hasError?: boolean;
+  userId?: string;
+  deviceId?: string;
+  messageId?: string;
+  startDate?: Date | string;
+  endDate?: Date | string;
+}
+
+export interface ReceiptCounts {
+  total: number;
+  sent: number;
+  delivered: number;
+  opened: number;
+  clicked: number;
+  failed: number;
+  /**
+   * Receipts the device itself acked. iOS can only confirm with a Notification
+   * Service Extension, so a low iOS delivery rate is expected without one.
+   */
+  deliveryConfirmedCount: number;
+  deliveryRate: number;
+  openRate: number;
+  clickRate: number;
+  failureRate: number;
+}
+
+export interface ReceiptAnalyticsOptions {
+  /** Default: 30 days before endDate. */
+  startDate?: Date | string;
+  /** Default: now. */
+  endDate?: Date | string;
+  /** Default 'day'. */
+  bucket?: 'day' | 'hour';
+}
+
+export interface ReceiptAnalytics {
+  startDate: string;
+  endDate: string;
+  bucket: 'day' | 'hour';
+  totals: ReceiptCounts;
+  /** `needsNse` is true for iOS: background delivery is only confirmed with a Notification Service Extension. */
+  byPlatform: (ReceiptCounts & { platform: string; needsNse: boolean })[];
+  timeseries: (ReceiptCounts & { bucket: string; platform: string })[];
+  topFailureReasons: { platform: string; error: string; count: number }[];
+  byTransport: (ReceiptCounts & { transport: string })[];
+  /** 'unknown' when neither the receipt nor the device recorded an SDK. */
+  bySdkVersion: (ReceiptCounts & { sdkName: string; sdkVersion: string })[];
 }
 
 export interface MessageDeliveryStats {
@@ -154,7 +249,39 @@ export interface Device {
   appIdentifier?: string;
   userId?: string;
   metadata?: Record<string, any>;
+  isActive?: boolean;
+  appVersion?: string | null;
+  /** SDK that last registered the device, e.g. 'web', 'ios', 'flutter'. */
+  sdkName?: string | null;
+  sdkVersion?: string | null;
   createdAt: string;
+  /** Last registration/update; used as "last seen". */
+  updatedAt?: string;
+}
+
+export interface DeviceListFilters {
+  /** 1-based page (default 1). */
+  page?: number;
+  /** Page size (default 50, max 200). */
+  limit?: number;
+  platform?: Platform;
+  isActive?: boolean;
+  userId?: string;
+  appVersion?: string;
+  sdkName?: string;
+  sdkVersion?: string;
+  /** Substring match on deviceId or userId. */
+  search?: string;
+  lastSeenBefore?: Date | string;
+  lastSeenAfter?: Date | string;
+  /** The device's most recent receipt failure reason, e.g. 'Unregistered'. */
+  failureReason?: string;
+}
+
+export interface DeviceFilterOptions {
+  appVersions: { appVersion: string; count: number }[];
+  sdks: { sdkName: string; sdkVersion: string; count: number }[];
+  failureReasons: { error: string; count: number }[];
 }
 
 // ─── Templates ───────────────────────────────────────────────────

@@ -64,6 +64,7 @@ export class RiviumPush {
 }
 
 export { RiviumPushError } from './client';
+export { SDK_NAME, SDK_VERSION } from './version';
 
 // Re-export types
 export * from './types';

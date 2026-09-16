@@ -1,8 +1,12 @@
 import { RiviumPushConfig } from './types';
 import https from 'https';
 import http from 'http';
+import { SDK_NAME, SDK_VERSION } from './version';
 
 const BASE_URL = 'https://push-api.rivium.co';
+
+/** Sent on every request so the backend can attribute traffic to this SDK. */
+export const SDK_HEADER_VALUE = `${SDK_NAME}/${SDK_VERSION}`;
 
 export class HttpClient {
   private apiKey: string;
@@ -26,7 +30,7 @@ export class HttpClient {
     if (query) {
       for (const [k, v] of Object.entries(query)) {
         if (v !== undefined && v !== null) {
-          url.searchParams.set(k, String(v));
+          url.searchParams.set(k, v instanceof Date ? v.toISOString() : String(v));
         }
       }
     }
@@ -40,6 +44,7 @@ export class HttpClient {
       'x-api-key': this.apiKey,
       'x-server-secret': this.serverSecret,
       'Content-Type': 'application/json',
+      'X-Rivium-SDK': SDK_HEADER_VALUE,
     };
 
     if (payload) {

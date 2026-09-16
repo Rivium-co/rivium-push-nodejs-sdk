@@ -200,6 +200,46 @@ await riviumPush.devices.setUserId('device-uuid', 'user-123');
 
 // Delete a device
 await riviumPush.devices.delete('device-uuid');
+
+// Paginated, filtered list (includes inactive devices unless isActive is set)
+const { items, total } = await riviumPush.devices.listPage({
+  platform: 'web',
+  sdkName: 'web',
+  isActive: true,
+  page: 1,
+  limit: 50,
+});
+console.log(items[0]?.sdkName, items[0]?.sdkVersion, items[0]?.appVersion, items[0]?.updatedAt);
+
+// Values you can filter on (app versions, SDK versions, failure reasons)
+const options = await riviumPush.devices.filterOptions();
+
+// Soft-unregister (stops sends, keeps history) and undo it
+await riviumPush.devices.unregister('device-uuid');
+await riviumPush.devices.reactivate('device-uuid');
+```
+
+`list()` is unchanged and still returns a plain array of active devices.
+
+## Delivery Receipts
+
+A send's `success` count means the push service *accepted* the notification.
+Receipts show what happened per device.
+
+```typescript
+const { messageId } = await riviumPush.push.sendToUser({ userId: 'user-123', title: 'Hi', body: 'Hello' });
+const receipts = await riviumPush.receipts.getForMessage(messageId!);
+
+// Paginated receipt log with filters
+const { items } = await riviumPush.receipts.list({ status: 'failed', platform: 'ios', page: 1, limit: 100 });
+
+// Delivery analytics (default range: last 30 days)
+const analytics = await riviumPush.receipts.analytics({
+  startDate: new Date(Date.now() - 7 * 86400_000),
+  endDate: new Date(),
+  bucket: 'day',
+});
+console.log(analytics.totals.deliveryRate, analytics.topFailureReasons);
 ```
 
 ## Templates

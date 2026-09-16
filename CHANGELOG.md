@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.4
+
+- Added: `receipts.list()` (paginated, filterable receipt log) and `receipts.analytics()` (totals, breakdowns, timeseries, top failure reasons).
+- Added: `devices.listPage()`, `devices.filterOptions()`, `devices.unregister()` and `devices.reactivate()`. `devices.list()` is unchanged.
+- Requests now send an `X-Rivium-SDK` header; `SDK_NAME` and `SDK_VERSION` are exported.
+- `Date` query values are sent as ISO strings.
+
 ## 0.1.3
 
 - Added `receipts` — per-device delivery receipts for messages you have sent. A send result counts what APNs, FCM or Web Push *accepted*, which is not the same as delivered; receipts carry the device, transport, failure reason, and whether the device confirmed receipt. Includes `getForMessage()`, `getMessageStats()` and action-button click counts.
