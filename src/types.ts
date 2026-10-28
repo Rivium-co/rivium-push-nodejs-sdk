@@ -11,6 +11,19 @@ export interface RiviumPushConfig {
    * accepted only for `localhost` and `127.0.0.1`.
    */
   baseUrl?: string;
+  /**
+   * How many times a request that was rate limited (HTTP 429) is retried
+   * after the wait the API asks for in `Retry-After` (optional, default 2;
+   * 0 turns retrying off). After the last retry the 429 is thrown as a
+   * `RiviumPushError` with `retryAfter` set.
+   */
+  maxRateLimitRetries?: number;
+  /**
+   * Longest single wait before a retry, in milliseconds (optional, default
+   * 60000). When the API asks for a longer wait, the 429 is thrown right
+   * away instead of waiting.
+   */
+  maxRetryWaitMs?: number;
 }
 
 // ─── Common ──────────────────────────────────────────────────────

@@ -415,6 +415,22 @@ try {
 }
 ```
 
+### Rate Limits
+
+If you send faster than your project's limits allow, the API answers `429 Too Many Requests` with a `Retry-After` header. The SDK waits that long and retries the request (up to 2 times by default). If the limit is still reached, the `RiviumPushError` has `statusCode` 429 and `retryAfter`, the number of seconds to wait:
+
+```typescript
+try {
+  await riviumPush.push.sendToDevice({ deviceId: 'device-123', title: 'Hello', body: 'World' });
+} catch (error) {
+  if (error instanceof RiviumPushError && error.statusCode === 429) {
+    console.log(`Rate limited, try again in ${error.retryAfter ?? 1}s`);
+  }
+}
+```
+
+Sends to one device are limited per device (240 per minute, 5,000 per hour); to reach many devices, use a topic, segment, user or broadcast send.
+
 ## Configuration
 
 ```typescript
@@ -423,6 +439,13 @@ const riviumPush = new RiviumPush({
   serverSecret: 'rv_srv_xxxxxxxxxxxxxxxxxxxxx',   // Required - from Rivium Console
 });
 ```
+
+Optional settings:
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `maxRateLimitRetries` | `2` | Retries of a rate-limited (429) request, after the wait in `Retry-After`. `0` turns retrying off. |
+| `maxRetryWaitMs` | `60000` | Longest wait before a retry. If the API asks for a longer wait, the error is thrown right away. |
 
 ### Environment Variables
 
