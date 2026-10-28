@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.5
+
+- Added: optional `baseUrl` in the client config. It defaults to the Rivium Push API; a custom value must use `https://` (plain `http://` only for `localhost` / `127.0.0.1`).
+- Docs: `apiKey` takes your project key (`rv_live_…`).
+
 ## 0.1.4
 
 - Added: `receipts.list()` (paginated, filterable receipt log) and `receipts.analytics()` (totals, breakdowns, timeseries, top failure reasons).

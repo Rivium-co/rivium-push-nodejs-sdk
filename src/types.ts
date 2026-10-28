@@ -1,10 +1,16 @@
 // ─── Configuration ───────────────────────────────────────────────
 
 export interface RiviumPushConfig {
-  /** Your Rivium API key (rv_live_xxx or rv_test_xxx) */
+  /** Your Rivium project API key (rv_live_xxx) */
   apiKey: string;
   /** Server secret for server-side authentication (rv_srv_xxx) - required for all server operations */
   serverSecret: string;
+  /**
+   * Base URL of the Rivium Push API (optional). Defaults to
+   * `https://push-api.rivium.co`. Must use `https://`; plain `http://` is
+   * accepted only for `localhost` and `127.0.0.1`.
+   */
+  baseUrl?: string;
 }
 
 // ─── Common ──────────────────────────────────────────────────────
